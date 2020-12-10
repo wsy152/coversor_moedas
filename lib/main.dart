@@ -29,6 +29,53 @@ class _HomeState extends State<Home> {
         ),
         centerTitle: true,
       ),
+      body: FutureBuilder<Map>(
+        future: getData(),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+              return Center(
+                child: Text(
+                  'Carregando dados...',
+                  style: TextStyle(color: Colors.black),
+                  textAlign: TextAlign.center,
+                ),
+              );
+            default:
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'Contem erros na chamada...',
+                    style: TextStyle(color: Colors.black),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              } else {
+                return SingleChildScrollView(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.monetization_on,
+                        size: 120,
+                        color: Colors.amber,
+                      ),
+                      TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Reais',
+                            labelStyle: TextStyle(color: Colors.amber),
+                            border: OutlineInputBorder(),
+                            prefixText: 'R\$',
+                          ),
+                          style: TextStyle(fontSize: 25, color: Colors.yellow))
+                    ],
+                  ),
+                );
+              }
+          }
+        },
+      ),
     );
   }
 }
