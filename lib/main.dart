@@ -25,20 +25,18 @@ class _HomeState extends State<Home> {
   final realController = TextEditingController();
   final dollarController = TextEditingController();
   final euroController = TextEditingController();
-  double dolar;
+  double dollar;
   double euro;
 
   void _realChange(String text) {
-    print(text);
+    double real = double.parse(text);
+    dollarController.text = (real / dollar).toStringAsPrecision(4);
+    euroController.text = (real / euro).toStringAsPrecision(4);
   }
 
-  void _dollarChange(String text) {
-    print(text);
-  }
+  void _dollarChange(String text) {}
 
-  void _euroChange(String text) {
-    print(text);
-  }
+  void _euroChange(String text) {}
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +71,7 @@ class _HomeState extends State<Home> {
                   ),
                 );
               } else {
-                dolar = snapshot.data['results']['currencies']['USD']['buy'];
+                dollar = snapshot.data['results']['currencies']['USD']['buy'];
                 euro = snapshot.data['results']['currencies']['EUR']['buy'];
                 return SingleChildScrollView(
                   padding: EdgeInsets.all(20),
@@ -93,12 +91,11 @@ class _HomeState extends State<Home> {
                         height: 20,
                       ),
                       bildTextField(
-                          'Dolar $euro', '\$', dollarController, _dollarChange),
+                          'Dolar', '\$', dollarController, _dollarChange),
                       SizedBox(
                         height: 20,
                       ),
-                      bildTextField(
-                          'Euro $euro', '\€', euroController, _euroChange),
+                      bildTextField('Euro ', '\€', euroController, _euroChange),
                     ],
                   ),
                 );
