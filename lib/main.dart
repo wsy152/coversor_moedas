@@ -10,6 +10,9 @@ void main() async {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: Home(),
+    theme: ThemeData(
+      hintColor: Colors.amber,
+    ),
   ));
 }
 
@@ -19,6 +22,24 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final realController = TextEditingController();
+  final dollarController = TextEditingController();
+  final euroController = TextEditingController();
+  double dolar;
+  double euro;
+
+  void _realChange(String text) {
+    print(text);
+  }
+
+  void _dollarChange(String text) {
+    print(text);
+  }
+
+  void _euroChange(String text) {
+    print(text);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,6 +73,8 @@ class _HomeState extends State<Home> {
                   ),
                 );
               } else {
+                dolar = snapshot.data['results']['currencies']['USD']['buy'];
+                euro = snapshot.data['results']['currencies']['EUR']['buy'];
                 return SingleChildScrollView(
                   padding: EdgeInsets.all(20),
                   child: Column(
@@ -61,14 +84,21 @@ class _HomeState extends State<Home> {
                         size: 120,
                         color: Colors.amber,
                       ),
-                      TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Reais',
-                            labelStyle: TextStyle(color: Colors.amber),
-                            border: OutlineInputBorder(),
-                            prefixText: 'R\$',
-                          ),
-                          style: TextStyle(fontSize: 25, color: Colors.yellow))
+                      SizedBox(
+                        height: 20,
+                      ),
+                      bildTextField(
+                          'Reais', 'R\$', realController, _realChange),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      bildTextField(
+                          'Dolar $euro', '\$', dollarController, _dollarChange),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      bildTextField(
+                          'Euro $euro', '\€', euroController, _euroChange),
                     ],
                   ),
                 );
@@ -83,4 +113,23 @@ class _HomeState extends State<Home> {
 Future<Map> getData() async {
   http.Response response = await http.get(request);
   return json.decode(response.body);
+}
+
+Widget bildTextField(
+    String text, String prefix, TextEditingController ctl, Function f) {
+  return TextField(
+    keyboardType: TextInputType.number,
+    controller: ctl,
+    onChanged: f,
+    decoration: InputDecoration(
+      labelText: text,
+      labelStyle: TextStyle(color: Colors.amber),
+      border: OutlineInputBorder(),
+      prefixText: prefix,
+    ),
+    style: TextStyle(
+      fontSize: 25,
+      color: Colors.yellow,
+    ),
+  );
 }
