@@ -1,5 +1,8 @@
+import 'package:conversor_moedas/funcoes.dart';
+import 'package:conversor_moedas/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -11,7 +14,7 @@ void main() async {
     debugShowCheckedModeBanner: false,
     home: Home(),
     theme: ThemeData(
-      hintColor: Colors.amber,
+      hintColor: Colors.black,
     ),
   ));
 }
@@ -22,21 +25,38 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final realController = TextEditingController();
-  final dollarController = TextEditingController();
-  final euroController = TextEditingController();
   double dollar;
   double euro;
+  void realChange(String text) {
+    if (text.isEmpty) {
+      clearAll();
+      return;
+    }
 
-  void _realChange(String text) {
     double real = double.parse(text);
-    dollarController.text = (real / dollar).toStringAsPrecision(4);
-    euroController.text = (real / euro).toStringAsPrecision(4);
+    dollarController.text = (real / dollar).toStringAsPrecision(6);
+    euroController.text = (real / euro).toString();
   }
 
-  void _dollarChange(String text) {}
+  void dollarChange(String text) {
+    if (text.isEmpty) {
+      clearAll();
+      return;
+    }
+    double dollar = double.parse(text);
+    realController.text = (dollar * this.dollar).toStringAsPrecision(3);
+    euroController.text = (dollar * this.dollar / euro).toStringAsPrecision(3);
+  }
 
-  void _euroChange(String text) {}
+  void euroChange(String text) {
+    if (text.isEmpty) {
+      clearAll();
+      return;
+    }
+    double euro = double.parse(text);
+    realController.text = (euro * this.euro).toStringAsPrecision(3);
+    dollarController.text = (euro * this.euro / dollar).toStringAsPrecision(3);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +64,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text(
           '\$ Conversor de Moedas \$',
-          style: TextStyle(color: Colors.yellow, fontSize: 25),
+          style: TextStyle(color: Colors.blue, fontSize: 25),
         ),
         centerTitle: true,
       ),
@@ -80,22 +100,21 @@ class _HomeState extends State<Home> {
                       Icon(
                         Icons.monetization_on,
                         size: 120,
-                        color: Colors.amber,
+                        color: Colors.blue,
                       ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      bildTextField('Reais', 'R\$', realController, realChange),
                       SizedBox(
                         height: 20,
                       ),
                       bildTextField(
-                          'Reais', 'R\$', realController, _realChange),
+                          'Dolar', '\$', dollarController, dollarChange),
                       SizedBox(
                         height: 20,
                       ),
-                      bildTextField(
-                          'Dolar', '\$', dollarController, _dollarChange),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      bildTextField('Euro ', '\€', euroController, _euroChange),
+                      bildTextField('Euro ', '\€', euroController, euroChange),
                     ],
                   ),
                 );
@@ -110,23 +129,4 @@ class _HomeState extends State<Home> {
 Future<Map> getData() async {
   http.Response response = await http.get(request);
   return json.decode(response.body);
-}
-
-Widget bildTextField(
-    String text, String prefix, TextEditingController ctl, Function f) {
-  return TextField(
-    keyboardType: TextInputType.number,
-    controller: ctl,
-    onChanged: f,
-    decoration: InputDecoration(
-      labelText: text,
-      labelStyle: TextStyle(color: Colors.amber),
-      border: OutlineInputBorder(),
-      prefixText: prefix,
-    ),
-    style: TextStyle(
-      fontSize: 25,
-      color: Colors.yellow,
-    ),
-  );
 }
